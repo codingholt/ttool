@@ -1,7 +1,6 @@
-# ttool.  
-*A lightweight tradingtool for binance*
+# ttool.
+*A lightweight tradingtool for binance *
 
- 
 ## Downloading ttool.
 
  you can download the app for mac on my site: [dowload here](|https://linktoyoursite.com)
