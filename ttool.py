@@ -3,13 +3,16 @@ from binance.enums import *
 import config 
 import PySimpleGUI as sg
 
+
 #ORDERS
 client = Client(config.API_KEY, config.API_SECRET,) 
 
 
 
 #GUI
-sg.theme('LightBrown12')    #Theme 
+sg.theme('Reddit')    #Theme 
+sg.theme_input_text_color('#000000')
+sg.theme_input_background_color('#FFFFFF')
 
 ##BUY TAB
 buyordertypechoices = ('Limit', 'Market', 'Stop loss') 
@@ -26,9 +29,16 @@ layoutSell =[[sg.Text('Ticker:',         size=(10,1)),       sg.Input('',size=(1
             [sg.Text('Amount',          size=(10,1)),       sg.Input('',size=(15,2), key='sellquantity')],
             [sg.Button('sell.')]]
 
+tabgrp = [sg.TabGroup([[sg.Tab('Buy', layoutBuy,), sg.Tab('Sell', layoutSell)]])],    
+        
+window = sg.Window("ttool", tabgrp, element_padding=(5,9),font=('Verdana',14), finalize=True)
 
-
-window = sg.Window("ttool", layoutBuy,)
+window['buyticker'].Widget.config(insertbackground='black')
+window['buyprice'].Widget.config(insertbackground='black')
+window['buyquantity'].Widget.config(insertbackground='black')
+window['sellticker'].Widget.config(insertbackground='black')
+window['sellprice'].Widget.config(insertbackground='black')
+window['sellquantity'].Widget.config(insertbackground='black')
 
 ##Variables
 #Buy side
@@ -37,37 +47,50 @@ event, value = window.read()
 try:
     buyticker = value['buyticker'].rstrip()
     listbuyordertype = value['buyordertype']
-    buyordertype = listbuyordertype[0]
-    if buyordertype == 'Limit':
-        newbuyordertype = buyordertype.replace('Limit', ORDER_TYPE_LIMIT)
-    if buyordertype == 'Market':
-        newbuyordertype = buyordertype.replace('Market', ORDER_TYPE_MARKET)
-    if buyordertype == 'Stop loss':
-        newbuyordertype = buyordertype.replace('Stop loss', ORDER_TYPE_STOP_LOSS)
+    try:
+        buyordertype = listbuyordertype[0]
+        if buyordertype == 'Limit':
+            newbuyordertype = buyordertype.replace('Limit', ORDER_TYPE_LIMIT)
+        if buyordertype == 'Market':
+            newbuyordertype = buyordertype.replace('Market', ORDER_TYPE_MARKET)
+        if buyordertype == 'Stop loss':
+            newbuyordertype = buyordertype.replace('Stop loss', ORDER_TYPE_STOP_LOSS)
+    except IndexError:
+        pass
     buypricewithoutfloat = value['buyprice'].rstrip()
     buyamountwithoutfloat = value['buyquantity'].rstrip()
-    buyprice = float(buypricewithoutfloat)
-    buyamount = float(buyamountwithoutfloat)
+    try:
+        buyprice = float(buypricewithoutfloat)
+        buyamount = float(buyamountwithoutfloat)
+    except ValueError:
+        pass
 except KeyError:
     pass
 #Sell side
 try:
-    event, value = window.read()
     sellticker = value['sellticker'].rstrip()
-    listbuyordertype = value['sellordertype']
-    sellordertype = listbuyordertype[0]
-    if sellordertype == 'Limit':
-        newsellordertype = sellordertype.replace('Limit', ORDER_TYPE_LIMIT)
-    if sellordertype == 'Market':
-        newsellordertype = sellordertype.replace('Market', ORDER_TYPE_MARKET)
-    if sellordertype == 'Stop loss':
-        newsellordertype = sellordertype.replace('Stop loss', ORDER_TYPE_STOP_LOSS)
+    listsellordertype = value['sellordertype']
+    try:
+        sellordertype = listsellordertype[0]
+        if sellordertype == 'Limit':
+            newsellordertype = sellordertype.replace('Limit', ORDER_TYPE_LIMIT)
+        if sellordertype == 'Market':
+            newsellordertype = sellordertype.replace('Market', ORDER_TYPE_MARKET)
+        if sellordertype == 'Stop loss':
+            newsellordertype = sellordertype.replace('Stop loss', ORDER_TYPE_STOP_LOSS)
+    except IndexError:
+        pass
     sellpricewithoutfloat = value['sellprice'].rstrip()
     sellamountwithoutfloat = value['sellquantity'].rstrip()
-    sellprice = float(sellpricewithoutfloat)
-    sellamount = float(sellamountwithoutfloat)
+    try:
+        sellprice = float(sellpricewithoutfloat)
+        sellamount = float(sellamountwithoutfloat)
+    except ValueError:
+        pass
 except KeyError:
     pass
+
+
 
 ##Orders
 #Buy orders
@@ -98,8 +121,8 @@ except NameError:
 def loopreadfunc():
     while True:     # The Event Loop
         event, value = window.read()
-        if event in (None):            # quit if exit button or X
-            break
+        if event == sg.WIN_CLOSED:         #exit   
+            break  
         if event == 'buy.':
             return buyOrder
         if event == 'sell.':
