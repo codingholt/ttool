@@ -1,3 +1,5 @@
+from itertools import zip_longest
+from os import times
 from binance.client import Client
 from binance.enums import *
 import config 
@@ -91,7 +93,6 @@ except KeyError:
     pass
 
 
-
 ##Orders
 #Buy orders
 
@@ -136,20 +137,3 @@ def sendingorder():
 
 
 ##############################################
-
-#ORDERS
-
-# client = Client(config.API_KEY, config.API_SECRET,)         #API key 
-
-
-##STORE THE VARIABLES
-
-##CREATE ORDERS
-
-
-##RETURN ORDERS
-
-##############################################
-
-##CREATE LOGS AND ERROR MESSAGES
-
