@@ -1,5 +1,3 @@
-from itertools import zip_longest
-from os import times
 from binance.client import Client
 from binance.enums import *
 import config 
@@ -136,4 +134,5 @@ def sendingorder():
         print(f'Selling {sellamount} {sellticker} at {sellprice}')
 
 
-##############################################
+####################
+
