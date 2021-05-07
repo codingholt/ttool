@@ -15,16 +15,16 @@ sg.theme_input_text_color('#000000')
 sg.theme_input_background_color('#FFFFFF')
 
 ##BUY TAB
-buyordertypechoices = ('Limit', 'Market', 'Stop loss') 
+buyordertypechoices = ('Limit', 'Market', 'Stop Market') 
 layoutBuy =[[sg.Text('Ticker:',         size=(10,1)),       sg.Input('',size=(15,2), key='buyticker')],
-            [sg.Text('Order type',      size=(10,1)),       sg.Listbox(buyordertypechoices, size=(10, len(buyordertypechoices)), key='buyordertype')],
+            [sg.Text('Order type',      size=(10,1)),       sg.Combo(buyordertypechoices, size=(10, len(buyordertypechoices)), pad=(10,2), key='buyordertype')],
             [sg.Text('Price',           size=(10,1)),       sg.Input('',size=(15,2), key='buyprice')],
             [sg.Text('Amount',          size=(10,1)),       sg.Input('',size=(15,2), key='buyquantity')],
             [sg.Button('buy.')]]
 ##SELL TAB
-sellordertypechoices = ('Limit', 'Market', 'Stop loss') 
+sellordertypechoices = ('Limit', 'Market', 'Stop Market') 
 layoutSell =[[sg.Text('Ticker:',         size=(10,1)),       sg.Input('',size=(15,2), key='sellticker')],
-            [sg.Text('Order type',      size=(10,1)),       sg.Listbox(buyordertypechoices, size=(10, len(buyordertypechoices)), key='sellordertype')],
+            [sg.Text('Order type',      size=(10,1)),       sg.Combo(buyordertypechoices, size=(10, len(buyordertypechoices,)), pad=(10,2), key='sellordertype')],
             [sg.Text('Price',           size=(10,1)),       sg.Input('',size=(15,2), key='sellprice')],
             [sg.Text('Amount',          size=(10,1)),       sg.Input('',size=(15,2), key='sellquantity')],
             [sg.Button('sell.')]]
@@ -45,16 +45,16 @@ window['sellquantity'].Widget.config(insertbackground='black')
 event, value = window.read()
 ####
 try:
-    buyticker = value['buyticker'].rstrip()
+    buyticker = value['buyticker'].rstrip().upper()
     listbuyordertype = value['buyordertype']
     try:
-        buyordertype = listbuyordertype[0]
+        buyordertype = listbuyordertype
         if buyordertype == 'Limit':
             newbuyordertype = buyordertype.replace('Limit', ORDER_TYPE_LIMIT)
         if buyordertype == 'Market':
             newbuyordertype = buyordertype.replace('Market', ORDER_TYPE_MARKET)
         if buyordertype == 'Stop loss':
-            newbuyordertype = buyordertype.replace('Stop loss', ORDER_TYPE_STOP_LOSS)
+            newbuyordertype = buyordertype.replace('Stop Market', ORDER_TYPE_STOP_LOSS)
     except IndexError:
         pass
     buypricewithoutfloat = value['buyprice'].rstrip()
@@ -66,18 +66,20 @@ try:
         pass
 except KeyError:
     pass
+
+
 #Sell side
 try:
-    sellticker = value['sellticker'].rstrip()
+    sellticker = value['sellticker'].rstrip().upper()
     listsellordertype = value['sellordertype']
     try:
-        sellordertype = listsellordertype[0]
+        sellordertype = listsellordertype
         if sellordertype == 'Limit':
             newsellordertype = sellordertype.replace('Limit', ORDER_TYPE_LIMIT)
         if sellordertype == 'Market':
             newsellordertype = sellordertype.replace('Market', ORDER_TYPE_MARKET)
-        if sellordertype == 'Stop loss':
-            newsellordertype = sellordertype.replace('Stop loss', ORDER_TYPE_STOP_LOSS)
+        if sellordertype == 'Stop M':
+            newsellordertype = sellordertype.replace('Stop Market', ORDER_TYPE_STOP_LOSS)
     except IndexError:
         pass
     sellpricewithoutfloat = value['sellprice'].rstrip()
@@ -90,6 +92,8 @@ try:
 except KeyError:
     pass
 
+print(sellordertype)
+print(newsellordertype)
 
 ##Orders
 #Buy orders
