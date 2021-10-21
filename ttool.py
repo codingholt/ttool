@@ -24,7 +24,7 @@ layoutBuy =[[sg.Text('Ticker:',         size=(10,1)),       sg.Input('',size=(15
 ##SELL TAB
 sellordertypechoices = ('Limit', 'Market', 'Stop Market') 
 layoutSell =[[sg.Text('Ticker:',         size=(10,1)),       sg.Input('',size=(15,2), key='sellticker')],
-            [sg.Text('Order type',      size=(10,1)),       sg.Combo(buyordertypechoices, size=(10, len(buyordertypechoices,)), pad=(10,2), key='sellordertype')],
+            [sg.Text('Order type',      size=(10,1)),       sg.Combo(sellordertypechoices, size=(10, len(buyordertypechoices,)), pad=(10,2), key='sellordertype')],
             [sg.Text('Price',           size=(10,1)),       sg.Input('',size=(15,2), key='sellprice')],
             [sg.Text('Amount',          size=(10,1)),       sg.Input('',size=(15,2), key='sellquantity')],
             [sg.Button('sell.')]]
@@ -76,9 +76,9 @@ try:
         sellordertype = listsellordertype
         if sellordertype == 'Limit':
             newsellordertype = sellordertype.replace('Limit', ORDER_TYPE_LIMIT)
-        if sellordertype == 'Market':
+        elif sellordertype == 'Market':
             newsellordertype = sellordertype.replace('Market', ORDER_TYPE_MARKET)
-        if sellordertype == 'Stop M':
+        elif sellordertype == 'Stop Market':
             newsellordertype = sellordertype.replace('Stop Market', ORDER_TYPE_STOP_LOSS)
     except IndexError:
         pass
@@ -92,8 +92,10 @@ try:
 except KeyError:
     pass
 
-print(sellordertype)
-print(newsellordertype)
+
+    print(sellordertype)
+    print(newsellordertype)
+
 
 ##Orders
 #Buy orders
@@ -103,39 +105,53 @@ try:
         symbol=buyticker,
         side=SIDE_BUY,
         type=newbuyordertype,
-        timeInForce=TIME_IN_FORCE_GTC,
         quantity=buyamount,
         price=buyprice)
 except NameError:
     pass
 
 #Sell orders
-try:
-    sellOrder = client.create_order(
-        symbol=sellticker,
-        side=SIDE_SELL,
-        type=newsellordertype,
-        timeInForce=TIME_IN_FORCE_GTC,
-        quantity=sellamount,
-        price=sellprice)
-except NameError:
-    pass
-    
-def loopreadfunc():
+def sellorders():
+    try:
+        if sellordertype == 'Limit':
+            client.create_order(
+                symbol=sellticker,
+                side=SIDE_SELL,
+                type=newsellordertype,
+                timeInForce=TIME_IN_FORCE_GTC
+                quantity=sellamount,
+                price=sellprice)
+        elif sellordertype =='Market':
+            client.order_market_buy(
+                symbol=sellticker,
+                quantity=sellamount)
+        elif sellordertype == 'Stop Market':
+            client.create_order(
+                symbol=sellticker,
+                side=SIDE_SELL,
+                type=ORDER_TYPE_STOP_LOSS,
+                quantity=sellamount,
+                stopPrice=sellprice)
+    except NameError:
+        pass
+
+#Sending order message    
+def sendingorder():
+    if event == 'buy.':
+        print(f'Buying {buyamount} {buyticker} at {buyprice} ')
+    if event == 'sell.':
+        print(f'Selling {sellamount} {sellticker} at {sellprice} ')
+
+def testFunc():
     while True:     # The Event Loop
         event, value = window.read()
         if event == sg.WIN_CLOSED:         #exit   
             break  
         if event == 'buy.':
-            return buyOrder
+            return sendingorder, buyOrder, window
         if event == 'sell.':
-            return sellOrder
+            return sendingorder, sellorders, window
 
-def sendingorder():
-    if event == 'buy.':
-        print(f'Buying {buyamount} {buyticker} at {buyprice}')
-    if event == 'sell.':
-        print(f'Selling {sellamount} {sellticker} at {sellprice}')
 
 
 ####################
